@@ -207,7 +207,7 @@ body{
 }
 
 /* link index */
-.group{display:flex;flex-direction:column}
+.group{display:flex;flex-direction:column;border-bottom:1px solid var(--line)}
 .group > h3{
   font-size:11px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--muted);margin:0 0 9px;font-weight:600;
@@ -219,7 +219,23 @@ body{
   color:inherit;text-decoration:none;
   transition:padding-left .14s ease;
 }
-.group .row:last-child{border-bottom:1px solid var(--line)}
+/* iOS has no install API, so the row opens these steps instead */
+.ios-help{
+  border-top:1px solid var(--line);
+  padding:13px 2px 15px;
+  display:flex;flex-direction:column;gap:9px;
+  font-size:13px;color:var(--muted);
+}
+.ios-help ol{margin:0;padding-left:19px;display:flex;flex-direction:column;gap:6px}
+.ios-help li{line-height:1.45}
+.ios-help b{color:var(--ink);font-weight:600}
+.ios-help .share{
+  display:inline-flex;width:15px;height:15px;
+  vertical-align:-3px;color:var(--accent);
+}
+.ios-help .share svg{width:15px;height:15px}
+.ios-help .note{margin:0;font-size:12.5px;line-height:1.45;opacity:.85}
+
 button.row{
   width:100%;cursor:pointer;text-align:left;
   font:inherit;color:inherit;background:none;
@@ -370,6 +386,14 @@ footer{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding-top:4px}
       </span>
       <span class="row-arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8.5"/><path d="M4.6 7.1 8 10.5l3.4-3.4"/><path d="M2.6 13.4h10.8"/></svg></span>
     </button>
+    <div class="ios-help" id="iosHelp" hidden>
+      <ol>
+        <li>Ekranın altındaki <b>Paylaş</b> düğmesine dokun <span class="share"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10.3V2.2"/><path d="M5.3 4.9 8 2.2l2.7 2.7"/><path d="M4.6 7.4H3.3a.7.7 0 0 0-.7.7v5.2c0 .4.3.7.7.7h9.4a.7.7 0 0 0 .7-.7V8.1a.7.7 0 0 0-.7-.7h-1.3"/></svg></span></li>
+        <li>Listeyi aşağı kaydır, <b>Ana Ekrana Ekle</b>'yi seç</li>
+        <li>Sağ üstteki <b>Ekle</b>'ye bas</li>
+      </ol>
+      <p class="note">Bu adımlar sadece <b>Safari</b>'de çalışır. Sayfayı Instagram, Chrome veya başka bir uygulamanın içinden açtıysan önce Safari'de aç.</p>
+    </div>
   </section>
 
   <section class="group">
@@ -477,11 +501,21 @@ footer{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding-top:4px}
     }).catch(function(){});
   });
 
-  // iOS Safari has no install API — show the manual route instead
-  if(/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream){
-    if(meta) meta.textContent='Paylaş → Ana Ekrana Ekle';
-    btn.style.cursor='default';
+  // iOS has no install API — the row opens manual steps instead
+  var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+         || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  if(iOS){
+    var help=document.getElementById('iosHelp');
+    if(meta) meta.textContent='Nasıl ekleneceğini göster';
+    btn.setAttribute('aria-expanded','false');
     btn.hidden=false;
+    btn.addEventListener('click', function(){
+      if(!help) return;
+      var open = help.hidden;
+      help.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      if(meta) meta.textContent = open ? 'Safari’de şu üç adım' : 'Nasıl ekleneceğini göster';
+    });
   }
 })();
 </script>

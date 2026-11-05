@@ -1,6 +1,6 @@
 /* KU Ekonomi Kulübü — offline cache.
    Bump CACHE when you publish a change so visitors get it. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE   = 'kuecon-' + VERSION;
 const FONTS   = 'kuecon-fonts-' + VERSION;
 const KEEP    = [CACHE, FONTS];
